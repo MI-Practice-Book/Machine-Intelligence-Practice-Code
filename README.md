@@ -1,20 +1,5 @@
 # 机器智能实践 - 配套教学代码库
 
-<div align="center">
-
-![Python](https://img.shields.io/badge/Python-3.7%2B-blue)
-![PyTorch](https://img.shields.io/badge/PyTorch-1.10%2B-orange)
-![License](https://img.shields.io/badge/License-Educational-green)
-![Status](https://img.shields.io/badge/Status-Active-success)
-
-**《机器智能实践》教材配套代码仓库**
-
-[📖 教材介绍](#教材介绍) • [🚀 快速开始](#快速开始) • [📚 章节目录](#章节目录) • [💻 使用指南](#使用指南) • [🤝 贡献指南](#贡献指南)
-
-</div>
-
----
-
 ## 📖 教材介绍
 
 本代码库是《机器智能实践》教材的配套实践代码仓库，涵盖了机器智能领域的核心技术和实战项目。每个章节都提供了完整的、可运行的代码实现，帮助学生深入理解理论知识并掌握实践技能。
