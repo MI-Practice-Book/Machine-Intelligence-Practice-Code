@@ -1,0 +1,17 @@
+name: mi_chapter2
+channels:
+  - pytorch
+  - paddle
+  - defaults
+dependencies:
+  - python=3.10
+  - numpy>=1.23.0
+  - pandas>=1.5.0
+  - matplotlib>=3.6.0
+  - notebook
+  - pytorch
+  - cpuonly  # 如需GPU支持请修改为 pytorch-cuda
+  - pip
+  - pip:
+    - tensorflow>=2.10.0
+    - paddlepaddle>=2.4.0

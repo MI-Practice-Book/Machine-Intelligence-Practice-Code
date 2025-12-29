@@ -1,8 +1,14 @@
-# Chapter02_Python_Tools
+# 第 2 章：Python 开发工具 实践指南
 
-**描述**: Python 环境配置与科学计算库示例代码
+本目录包含了《机器智能》实践教材第 2 章的所有配套代码。通过这些代码，读者可以快速搭建开发环境，并掌握深度学习框架的核心概念。
 
-## 提交要求
-- 请将完整代码放置于此目录下
-- 必须包含 requirements.txt
-- 运行示例请附带截图
+## 📁 内容说明
+- `environment.yml` / `requirements.txt`: 实验环境配置文件。
+- `01_scientific_computing.py`: 演示数据处理与可视化。
+- `02_framework_comparison.py`: 展示主流框架的代码差异。
+- `03_tensor_and_autograd.py`: 深入理解张量与自动求导。
+## 🛠 环境搭建
+
+```bash
+conda env create -f environment.yml
+conda activate mi_chapter2
