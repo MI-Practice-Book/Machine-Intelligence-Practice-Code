@@ -1,0 +1,231 @@
+# DeepSORT配置文件
+# 所有参数都有默认值，可根据需要修改
+
+# ============================================
+# 模型配置
+# ============================================
+models:
+  # YOLOv5检测器配置
+  detector:
+    model_path: "yolov5s"  # 模型路径或名称 (yolov5s/yolov5m/yolov5l/yolov5x)
+    conf_thresh: 0.5       # 置信度阈值
+    iou_thresh: 0.45       # NMS的IoU阈值
+    img_size: 640          # 输入图像尺寸
+
+  # Re-ID特征提取器配置
+  reid:
+    model_path: null       # Re-ID模型路径 (null表示使用随机初始化)
+    feature_dim: 128       # 特征维度
+    input_size: [64, 128]  # 输入尺寸 [width, height]
+
+# ============================================
+# 跟踪器配置
+# ============================================
+tracker:
+  # 外观距离度量
+  metric: "cosine"              # 距离类型 (cosine/euclidean)
+  max_cosine_distance: 0.2      # 外观匹配的最大余弦距离
+  nn_budget: 100                # 每条轨迹的特征库容量
+
+  # 运动距离度量
+  max_iou_distance: 0.7         # IoU匹配的最大距离
+
+  # 轨迹管理
+  max_age: 30                   # 轨迹最大允许的未匹配帧数
+  n_init: 3                     # 轨迹确认所需的连续匹配次数
+
+  # 级联匹配
+  cascade_depth: 30             # 级联匹配的最大深度
+
+# ============================================
+# 卡尔曼滤波器配置
+# ============================================
+kalman_filter:
+  # 过程噪声权重
+  std_weight_position: 0.05     # 位置噪声权重
+  std_weight_velocity: 0.00625  # 速度噪声权重
+
+  # 观测噪声
+  std_weight_bbox_area: 0.1     # 边界框面积噪声权重
+
+# ============================================
+# 数据集配置
+# ============================================
+dataset:
+  # MOT数据集根目录
+  mot_root: "data/MOT17"
+
+  # 数据集划分
+  split: "train"  # train/test
+
+  # 序列名称(null表示处理所有序列)
+  sequence: null
+
+# ============================================
+# 输入/输出配置
+# ============================================
+io:
+  # 输入源
+  input:
+    video_path: null       # 视频文件路径
+    camera_id: null        # 摄像头ID
+
+  # 输出
+  output:
+    video_path: "output.mp4"           # 输出视频路径
+    results_path: "results.txt"        # 跟踪结果保存路径
+    stats_path: "stats.png"            # 统计图保存路径
+    save_video: true                   # 是否保存视频
+    save_results: true                 # 是否保存结果
+    save_stats: true                   # 是否保存统计图
+
+# ============================================
+# 可视化配置
+# ============================================
+visualization:
+  show: false                  # 是否实时显示
+  show_trajectory: true        # 是否显示轨迹
+  show_id: true                # 是否显示ID
+  show_conf: false             # 是否显示置信度
+  trajectory_length: 30        # 轨迹历史最大长度
+  bbox_thickness: 2            # 边界框线条粗细
+
+# ============================================
+# 运行配置
+# ============================================
+runtime:
+  device: "cuda"        # 计算设备 (cuda/cpu)
+  batch_size: 1         # 批处理大小
+  num_workers: 4        # 数据加载线程数
+
+  # 日志配置
+  log_level: "INFO"     # 日志级别 (DEBUG/INFO/WARNING/ERROR)
+  log_file: "tracking.log"  # 日志文件路径
+
+# ============================================
+# 性能优化配置
+# ============================================
+optimization:
+  # 是否使用TensorRT加速(需要安装tensorrt)
+  use_tensorrt: false
+
+  # 是否使用半精度(FP16)
+  use_fp16: false
+
+  # 是否启用多GPU
+  use_multi_gpu: false
+
+# ============================================
+# 调试配置
+# ============================================
+debug:
+  # 是否保存中间结果
+  save_detections: false        # 保存检测结果
+  save_features: false          # 保存特征
+
+  # 是否显示详细时间统计
+  show_timing: true
+
+  # 性能分析
+  profile: false                # 是否启用性能分析
+
+# ============================================
+# 数据增强配置(训练Re-ID时使用)
+# ============================================
+augmentation:
+  # 训练时数据增强
+  horizontal_flip: 0.5          # 水平翻转概率
+  random_crop: true             # 随机裁剪
+  color_jitter:
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.2
+    hue: 0.1
+  random_erasing: 0.5           # 随机擦除概率
+
+# ============================================
+# 评估配置
+# ============================================
+evaluation:
+  # 评估指标
+  metrics:
+    - "MOTA"      # 多目标跟踪准确度
+    - "MOTP"      # 多目标跟踪精度
+    - "IDF1"      # ID F1分数
+    - "MT"        # 主要跟踪目标数
+    - "ML"        # 主要丢失目标数
+    - "FP"        # 假阳性
+    - "FN"        # 假阴性
+    - "IDS"       # ID切换次数
+
+  # 评估阈值
+  iou_threshold: 0.5            # IoU匹配阈值
+
+# ============================================
+# 预训练模型下载链接
+# ============================================
+pretrained:
+  yolov5s: "https://github.com/ultralytics/yolov5/releases/download/v6.0/yolov5s.pt"
+  yolov5m: "https://github.com/ultralytics/yolov5/releases/download/v6.0/yolov5m.pt"
+  yolov5l: "https://github.com/ultralytics/yolov5/releases/download/v6.0/yolov5l.pt"
+
+  # Re-ID预训练模型(示例链接)
+  reid_model: "https://example.com/reid_model.pth"
+
+# ============================================
+# 示例使用场景配置
+# ============================================
+scenarios:
+  # 高速场景(优先速度)
+  fast:
+    detector:
+      model_path: "yolov5s"
+      conf_thresh: 0.5
+    tracker:
+      max_age: 10
+      n_init: 2
+
+  # 精确场景(优先精度)
+  accurate:
+    detector:
+      model_path: "yolov5l"
+      conf_thresh: 0.3
+    tracker:
+      max_age: 50
+      n_init: 5
+      max_cosine_distance: 0.15
+
+  # 拥挤场景(多目标)
+  crowded:
+    detector:
+      conf_thresh: 0.4
+    tracker:
+      max_age: 20
+      n_init: 4
+      max_iou_distance: 0.5
+
+# ============================================
+# 注释说明
+# ============================================
+#
+# 参数调优建议:
+#
+# 1. max_cosine_distance:
+#    - 较小值(0.1-0.2): 严格匹配,适合外观变化小的场景
+#    - 较大值(0.3-0.5): 宽松匹配,适合遮挡频繁的场景
+#
+# 2. max_iou_distance:
+#    - 较小值(0.5-0.6): 严格位置匹配
+#    - 较大值(0.7-0.9): 宽松位置匹配
+#
+# 3. max_age:
+#    - 较小值(10-20): 快速删除丢失目标,适合场景简单
+#    - 较大值(30-70): 保持丢失目标更久,适合遮挡频繁
+#
+# 4. n_init:
+#    - 较小值(2-3): 快速确认轨迹,适合目标稳定
+#    - 较大值(4-6): 谨慎确认轨迹,减少误匹配
+#
+# 5. nn_budget:
+#    - 影响内存占用和计算时间
+#    - 推荐: 30-100
