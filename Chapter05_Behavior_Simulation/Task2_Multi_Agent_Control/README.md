@@ -31,7 +31,12 @@
 本案例中 **QMIX 训练未通过独立 Python 脚本封装**，而是直接采用 PyMARL 框架的原生命令行方式运行，例如：
 
 ```bash
-python src/main.py --config=qmix --env-config=sc2 with env_args.map_name=3m
+python src/main.py \
+  --config=qmix \
+  --env-config=sc2 \
+  with env_args.map_name=3m \
+       save_model=True \
+       save_replay=True
 ```
 
 ## 说明
@@ -86,6 +91,7 @@ python src/main.py --config=qmix --env-config=sc2 with env_args.map_name=3m
 
 ## 最终文件目录如下
 <img width="464" height="483" alt="image" src="https://github.com/user-attachments/assets/61f62032-1972-41a6-a6b4-db6de47aa23f" />
+
 
 
 
