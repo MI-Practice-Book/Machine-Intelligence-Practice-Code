@@ -15,7 +15,6 @@ from tensorboard.backend.event_processing.event_accumulator import EventAccumula
 ENV_ID = "Reacher-v4"
 MODEL_PATH = "ppo_reacher_final"
 
-# ⚠️ 这里指向你的 TensorBoard 日志根目录
 TB_LOG_DIR = "./ppo_reacher_tb/"
 
 OUT_DIR = "./figs_code5"
