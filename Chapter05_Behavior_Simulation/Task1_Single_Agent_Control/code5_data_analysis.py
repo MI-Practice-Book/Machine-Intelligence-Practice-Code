@@ -1,17 +1,23 @@
 # code5_data_analysis.py
 # 数据分析与处理：
-# 5.1 状态分布分析
-# 5.2 动作空间输出特性
-# 5.3 奖励与学习过程关系
-# 5.4 PPO Rollout 数据流转分析
+# 状态分布分析
+# 动作空间输出特性
+# 奖励与学习过程关系（TensorBoard: rollout/ep_rew_mean）
+
+
 import os
 import gymnasium as gym
 import numpy as np
 import matplotlib.pyplot as plt
 from stable_baselines3 import PPO
+from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 
 ENV_ID = "Reacher-v4"
 MODEL_PATH = "ppo_reacher_final"
+
+# ⚠️ 这里指向你的 TensorBoard 日志根目录
+TB_LOG_DIR = "./ppo_reacher_tb/"
+
 OUT_DIR = "./figs_code5"
 os.makedirs(OUT_DIR, exist_ok=True)
 
@@ -20,34 +26,29 @@ MAX_STEPS = 200
 
 
 # =========================
-# 收集 rollout 数据
+# 收集 rollout 数据（用于状态 / 动作分析）
 # =========================
 def collect_rollout_data(env, model):
-    obs_list, act_list, rew_list = [], [], []
+    obs_list, act_list = [], []
 
     for ep in range(NUM_EPISODES):
         obs, _ = env.reset()
         for t in range(MAX_STEPS):
             action, _ = model.predict(obs, deterministic=True)
-            next_obs, reward, terminated, truncated, _ = env.step(action)
+            next_obs, _, terminated, truncated, _ = env.step(action)
 
             obs_list.append(obs)
             act_list.append(action)
-            rew_list.append(reward)
 
             obs = next_obs
             if terminated or truncated:
                 break
 
-    return (
-        np.array(obs_list),
-        np.array(act_list),
-        np.array(rew_list)
-    )
+    return np.array(obs_list), np.array(act_list)
 
 
 # =========================
-# 5.1 状态分布分析
+# 状态分布分析
 # =========================
 def analyze_state_distribution(obs):
     mean = obs.mean(axis=0)
@@ -80,65 +81,54 @@ def analyze_action_distribution(actions):
         plt.close()
 
 
+# =========================
+# 奖励与学习过程关系
+# 直接读取 TensorBoard: rollout/ep_rew_mean
+# =========================
+def analyze_reward_from_tensorboard(tb_root_dir):
+    # 自动找到最新一次 PPO 训练目录（如 PPO_1 / PPO_2）
+    subdirs = [
+        os.path.join(tb_root_dir, d)
+        for d in os.listdir(tb_root_dir)
+        if os.path.isdir(os.path.join(tb_root_dir, d))
+    ]
+    if len(subdirs) == 0:
+        raise RuntimeError("No TensorBoard log directory found.")
 
-# =========================
-# 5.3 奖励与时间关系
-# =========================
-def analyze_reward_process(rewards):
-    rewards = np.array(rewards)
-    cumulative = np.cumsum(rewards)
+    tb_dir = sorted(subdirs)[-1]
+
+    ea = EventAccumulator(tb_dir)
+    ea.Reload()
+
+    if "rollout/ep_rew_mean" not in ea.Tags()["scalars"]:
+        raise RuntimeError("rollout/ep_rew_mean not found in TensorBoard logs.")
+
+    events = ea.Scalars("rollout/ep_rew_mean")
+    steps = [e.step for e in events]
+    values = [e.value for e in events]
 
     plt.figure()
-    plt.plot(cumulative)
-    plt.title("Cumulative Reward over Rollout Steps")
-    plt.xlabel("Step")
-    plt.ylabel("Cumulative Reward")
+    plt.plot(steps, values)
+    plt.xlabel("Training Timesteps")
+    plt.ylabel("Episode Reward Mean")
+    plt.title("rollout/ep_rew_mean (Training Curve)")
     plt.tight_layout()
-    plt.savefig(f"{OUT_DIR}/reward_process.png", dpi=200)
+    plt.savefig(f"{OUT_DIR}/rollout_ep_rew_mean.png", dpi=200)
     plt.close()
 
-
 # =========================
-# 5.4 PPO Rollout 数据流转示意
+# 主流程
 # =========================
-def plot_rollout_flow():
-    text = (
-        "PPO Rollout Data Flow:\n\n"
-        "State (obs)\n"
-        "   ↓\n"
-        "Policy Network (Actor)\n"
-        "   ↓\n"
-        "Action (continuous)\n"
-        "   ↓\n"
-        "Environment Step\n"
-        "   ↓\n"
-        "Reward, Next State\n"
-        "   ↓\n"
-        "Value Network (Critic)\n"
-        "   ↓\n"
-        "Advantage Estimation (GAE)\n"
-        "   ↓\n"
-        "Policy / Value Update\n"
-    )
-
-    plt.figure(figsize=(6, 6))
-    plt.text(0.05, 0.95, text, va="top", fontsize=11)
-    plt.axis("off")
-    plt.title("PPO Rollout Buffer Data Flow")
-    plt.savefig(f"{OUT_DIR}/rollout_flow.png", dpi=200)
-    plt.close()
-
-
 def main():
     env = gym.make(ENV_ID)
     model = PPO.load(MODEL_PATH)
 
-    obs, acts, rews = collect_rollout_data(env, model)
-
+    # 状态 / 动作分析
+    obs, acts = collect_rollout_data(env, model)
     analyze_state_distribution(obs)
     analyze_action_distribution(acts)
-    analyze_reward_process(rews)
-    plot_rollout_flow()
+
+    analyze_reward_from_tensorboard(TB_LOG_DIR)
 
     env.close()
     print("Code5 analysis finished. Figures saved to:", OUT_DIR)
