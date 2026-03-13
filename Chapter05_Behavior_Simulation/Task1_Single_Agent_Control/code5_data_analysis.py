@@ -9,6 +9,18 @@ import os
 import gymnasium as gym
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+
+# ===== 核心：Linux 中文配置 =====
+# 设置字体为文泉驿正黑（Linux 原生支持）
+plt.rcParams['font.sans-serif'] = ['WenQuanYi Zen Hei']
+# 解决负号显示为方块的问题
+plt.rcParams['axes.unicode_minus'] = False
+# 可选：如果还想让图表更美观，可添加以下配置
+mpl.rcParams['font.family'] = 'sans-serif'
+mpl.rcParams['figure.figsize'] = (10, 6)
+mpl.rcParams['font.size'] = 12
+
 from stable_baselines3 import PPO
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 
@@ -55,11 +67,11 @@ def analyze_state_distribution(obs):
 
     plt.figure()
     plt.bar(range(len(mean)), mean, yerr=std)
-    plt.title("State Distribution (Mean ± Std)")
-    plt.xlabel("State Dimension")
-    plt.ylabel("Value")
+    plt.title("状态分布 (均值 ± 标准差)")
+    plt.xlabel("状态维度")
+    plt.ylabel("价值")
     plt.tight_layout()
-    plt.savefig(f"{OUT_DIR}/state_distribution.png", dpi=200)
+    plt.savefig(f"{OUT_DIR}/状态分布.png", dpi=200)
     plt.close()
 
 
@@ -72,11 +84,11 @@ def analyze_action_distribution(actions):
     for i in range(num_actions):
         plt.figure()
         plt.hist(actions[:, i], bins=50)
-        plt.title(f"Action {i} Distribution")
-        plt.xlabel("Action Value")
-        plt.ylabel("Frequency")
+        plt.title(f"动作{i}分布")
+        plt.xlabel("动作值")
+        plt.ylabel("频率")
         plt.tight_layout()
-        plt.savefig(f"{OUT_DIR}/action_{i}_distribution.png", dpi=200)
+        plt.savefig(f"{OUT_DIR}/动作{i}分布.png", dpi=200)
         plt.close()
 
 
@@ -108,11 +120,11 @@ def analyze_reward_from_tensorboard(tb_root_dir):
 
     plt.figure()
     plt.plot(steps, values)
-    plt.xlabel("Training Timesteps")
-    plt.ylabel("Episode Reward Mean")
-    plt.title("rollout/ep_rew_mean (Training Curve)")
+    plt.xlabel("训练时间步数")
+    plt.ylabel("回合平均奖励")
+    plt.title("回合平均奖励 (训练曲线)")
     plt.tight_layout()
-    plt.savefig(f"{OUT_DIR}/rollout_ep_rew_mean.png", dpi=200)
+    plt.savefig(f"{OUT_DIR}/回合平均奖励 (训练曲线).png", dpi=200)
     plt.close()
 
 # =========================
