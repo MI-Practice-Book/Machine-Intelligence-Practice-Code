@@ -6,6 +6,17 @@ import os
 import glob
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+
+# ===== 核心：Linux 中文配置 =====
+# 设置字体为文泉驿正黑（Linux 原生支持）
+plt.rcParams['font.sans-serif'] = ['WenQuanYi Zen Hei']
+# 解决负号显示为方块的问题
+plt.rcParams['axes.unicode_minus'] = False
+# 可选：如果还想让图表更美观，可添加以下配置
+mpl.rcParams['font.family'] = 'sans-serif'
+mpl.rcParams['figure.figsize'] = (10, 6)
+mpl.rcParams['font.size'] = 12
 
 from tensorboard.backend.event_processing import event_accumulator
 
@@ -139,10 +150,10 @@ def main():
         steps, vals = tb_data["train/value_loss"]
         plot_and_save(
             steps, vals,
-            title="Value Loss Curve (SB3 PPO)",
-            xlabel="Environment Steps",
-            ylabel="Value Loss",
-            out_path=os.path.join(OUT_DIR, "value_loss.png"),
+            title="价值损失曲线 (SB3 PPO)",
+            xlabel="环境步数",
+            ylabel="价值损失",
+            out_path=os.path.join(OUT_DIR, "价值损失.png"),
             smooth_window=50
         )
 
@@ -151,10 +162,10 @@ def main():
         steps, vals = tb_data["train/policy_gradient_loss"]
         plot_and_save(
             steps, vals,
-            title="Policy Loss Curve (Policy Gradient Loss, SB3 PPO)",
-            xlabel="Environment Steps",
-            ylabel="Policy Loss",
-            out_path=os.path.join(OUT_DIR, "policy_loss.png"),
+            title="策略损失曲线(策略梯度损失, SB3 PPO)",
+            xlabel="环境步数",
+            ylabel="策略损失",
+            out_path=os.path.join(OUT_DIR, "策略损失.png"),
             smooth_window=50
         )
 
@@ -167,11 +178,11 @@ def main():
         plt.plot(t, mean_r)
         # 不指定颜色；用 fill_between 做误差带
         plt.fill_between(t, mean_r - std_r, mean_r + std_r, alpha=0.2)
-        plt.title("Evaluation Return Curve (Mean ± Std)")
-        plt.xlabel("Environment Steps")
-        plt.ylabel("Evaluation Return")
+        plt.title("评估回报曲线 (均值 ± 标准差)")
+        plt.xlabel("环境步数")
+        plt.ylabel("评估回报")
         plt.tight_layout()
-        out_path = os.path.join(OUT_DIR, "evaluation_return.png")
+        out_path = os.path.join(OUT_DIR, "评估回报.png")
         plt.savefig(out_path, dpi=200)
         plt.close()
         print(f"Saved: {out_path}")
