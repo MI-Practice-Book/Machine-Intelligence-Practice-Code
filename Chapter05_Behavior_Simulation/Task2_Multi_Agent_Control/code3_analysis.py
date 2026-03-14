@@ -4,6 +4,17 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")  # ★ 关键：无 GUI 服务器必须加
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+
+# ===== 核心：Linux 中文配置 =====
+# 设置字体为文泉驿正黑（Linux 原生支持）
+plt.rcParams['font.sans-serif'] = ['WenQuanYi Zen Hei']
+# 解决负号显示为方块的问题
+plt.rcParams['axes.unicode_minus'] = False
+# 可选：如果还想让图表更美观，可添加以下配置
+mpl.rcParams['font.family'] = 'sans-serif'
+mpl.rcParams['figure.figsize'] = (10, 6)
+mpl.rcParams['font.size'] = 10
 
 # ========= 路径配置 =========
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -55,11 +66,11 @@ def main():
     # ===== 图 1：团队胜率 =====
     plt.figure(figsize=(6, 4))
     plt.plot(df["t_env"], df["battle_won_mean"])
-    plt.xlabel("Environment Steps")
-    plt.ylabel("Win Rate")
-    plt.title("Team Win Rate During Training")
+    plt.xlabel("环境步数")
+    plt.ylabel("胜率")
+    plt.title("训练期间的团队胜率")
     plt.grid(True)
-    path1 = os.path.join(OUT_DIR, "win_rate.png")
+    path1 = os.path.join(OUT_DIR, "胜率.png")
     plt.savefig(path1, dpi=150)
     plt.close()
     print("[SAVED]", path1)
@@ -67,11 +78,11 @@ def main():
     # ===== 图 2：平均回合长度 =====
     plt.figure(figsize=(6, 4))
     plt.plot(df["t_env"], df["ep_length_mean"])
-    plt.xlabel("Environment Steps")
-    plt.ylabel("Episode Length")
-    plt.title("Episode Length During Training")
+    plt.xlabel("环境步数")
+    plt.ylabel("回合长度")
+    plt.title("训练期间的回合长度")
     plt.grid(True)
-    path2 = os.path.join(OUT_DIR, "episode_length.png")
+    path2 = os.path.join(OUT_DIR, "回合长度.png")
     plt.savefig(path2, dpi=150)
     plt.close()
     print("[SAVED]", path2)
@@ -80,12 +91,12 @@ def main():
     plt.figure(figsize=(6, 4))
     plt.plot(df["t_env"], df["dead_enemies_mean"], label="Dead Enemies", marker='^')
     plt.plot(df["t_env"], df["dead_allies_mean"], label="Dead Allies", marker='o')
-    plt.xlabel("Environment Steps")
-    plt.ylabel("Count")
-    plt.title("Combat Outcome Statistics")
+    plt.xlabel("环境步数")
+    plt.ylabel("数量")
+    plt.title("战斗结果统计")
     plt.legend()
     plt.grid(True)
-    path3 = os.path.join(OUT_DIR, "combat_stats.png")
+    path3 = os.path.join(OUT_DIR, "战斗结果.png")
     plt.savefig(path3, dpi=150)
     plt.close()
     print("[SAVED]", path3)
